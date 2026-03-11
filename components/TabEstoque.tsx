@@ -17,20 +17,20 @@ export function TabEstoque({ products, setProducts, setSales, lowStock }: Props)
   const [fb, setFb] = useState<Feedback>(null);
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
-  const emptyForm = { name: "", brand: "", category: "", ml: "100", stock: "0", stockMin: "5", costPrice: "0", sellPrice: "0" };
+  const emptyForm = { name: "", category: "", ml: "100", stock: "0", stockMin: "5", costPrice: "0", sellPrice: "0" };
   const [form, setForm] = useState(emptyForm);
   const upd = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return products.filter((p: Product) =>
-      p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q)
+      p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
     );
   }, [products, search]);
 
   const handleEdit = (p: Product) => {
     setEditingId(p.id);
-    setForm({ name: p.name, brand: p.brand, category: p.category, ml: String(p.ml), stock: String(p.stock), stockMin: String(p.stockMin), costPrice: String(p.costPrice), sellPrice: String(p.sellPrice) });
+    setForm({ name: p.name, category: p.category, ml: String(p.ml), stock: String(p.stock), stockMin: String(p.stockMin), costPrice: String(p.costPrice), sellPrice: String(p.sellPrice) });
     setFb(null);
   };
 
@@ -38,7 +38,7 @@ export function TabEstoque({ products, setProducts, setSales, lowStock }: Props)
     e.preventDefault(); setFb(null);
     if (!form.name.trim()) { setFb({ kind: "error", text: "Informe o nome do perfume." }); return; }
     const payload = {
-      name: form.name.trim(), brand: form.brand.trim(), category: form.category.trim() || "Sem categoria",
+      name: form.name.trim(), category: form.category.trim() || "Sem categoria",
       ml: Math.max(1, parseNum(form.ml)), stock: Math.max(0, parseNum(form.stock)),
       stock_min: Math.max(0, parseNum(form.stockMin)),
       cost_price: Math.max(0, parseNum(form.costPrice)), sell_price: Math.max(0, parseNum(form.sellPrice)),
@@ -96,10 +96,7 @@ export function TabEstoque({ products, setProducts, setSales, lowStock }: Props)
                 <label>Nome do perfume *</label>
                 <input value={form.name} onChange={e => upd("name", e.target.value)} placeholder="Ex.: Sauvage" />
               </div>
-              <div className="field">
-                <label>Marca</label>
-                <input value={form.brand} onChange={e => upd("brand", e.target.value)} placeholder="Ex.: Dior" />
-              </div>
+
               <div className="field">
                 <label>Categoria</label>
                 <input value={form.category} onChange={e => upd("category", e.target.value)} placeholder="Ex.: Masculino" />
@@ -146,7 +143,7 @@ export function TabEstoque({ products, setProducts, setSales, lowStock }: Props)
                 <div className="list-item-main">
                   <div className="list-item-title">
                     {p.name}
-                    {p.brand && <span style={{ fontWeight: 400, color: "var(--muted)", fontSize: "0.85rem" }}> · {p.brand}</span>}
+
                     {p.stock <= p.stockMin && <span className="badge badge-warn" style={{ marginLeft: "0.4rem", fontSize: "0.68rem" }}>⚠ Baixo</span>}
                   </div>
                   <div className="list-item-sub">
