@@ -151,7 +151,7 @@ export function TabInvestimentos({ news }: { news: NewsArticle[] }) {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,148,63,0.12)" />
               <XAxis dataKey="meses" tick={{ fontSize: 11, fill: "#7a7060" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
-              <Tooltip formatter={(v?: number) => fmt(v ?? 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+              <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               {investments.map(inv => (
                 <Line key={inv.name} type="monotone" dataKey={inv.name} stroke={inv.color} strokeWidth={2} dot={false} />

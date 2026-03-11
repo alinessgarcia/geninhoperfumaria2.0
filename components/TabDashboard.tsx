@@ -113,7 +113,7 @@ export function TabDashboard({ products, customers, sales, news, summaryWeek, su
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,148,63,0.12)" />
               <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#7a7060" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
-              <Tooltip formatter={(v?: number) => fmt(v ?? 0)} contentStyle={{ borderRadius: 10, border: "1px solid #e8c470", fontSize: 12 }} />
+              <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, border: "1px solid #e8c470", fontSize: 12 }} />
               <Bar dataKey="faturamento" fill="#b8943f" radius={[4,4,0,0]} name="Faturamento" />
               <Bar dataKey="lucro" fill="#d4a853" radius={[4,4,0,0]} opacity={0.7} name="Lucro" />
             </BarChart>

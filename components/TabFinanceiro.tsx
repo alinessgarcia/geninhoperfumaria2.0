@@ -141,7 +141,7 @@ export function TabFinanceiro({ sales, products, customers, productById, custome
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,148,63,0.12)" />
               <XAxis dataKey="mes" tick={{ fontSize: 10, fill: "#7a7060" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
-              <Tooltip formatter={(v?: number) => fmt(v ?? 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+              <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Line type="monotone" dataKey="faturamento" stroke="#b8943f" strokeWidth={2.5} dot={false} name="Faturamento" />
               <Line type="monotone" dataKey="lucro" stroke="#1e7c5a" strokeWidth={2} dot={false} name="Lucro" strokeDasharray="5 3" />
@@ -156,10 +156,10 @@ export function TabFinanceiro({ sales, products, customers, productById, custome
             ? <div className="empty-state"><p>Nenhuma venda registrada</p></div>
             : <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
-                  <Pie data={paymentData} cx="50%" cy="50%" outerRadius={85} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={11}>
+                  <Pie data={paymentData} cx="50%" cy="50%" outerRadius={85} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`} labelLine={false} fontSize={11}>
                     {paymentData.map((_: any, i: number) => <Cell key={i} fill={GOLD_PALETTE[i % GOLD_PALETTE.length]} />)}
                   </Pie>
-                  <Tooltip formatter={(v?: number) => fmt(v ?? 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+                  <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>}
         </div>
@@ -177,7 +177,7 @@ export function TabFinanceiro({ sales, products, customers, productById, custome
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,148,63,0.10)" horizontal={false} />
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
                   <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 10, fill: "#3d3830" }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v?: number) => fmt(v ?? 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+                  <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
                   <Bar dataKey="revenue" fill="#b8943f" radius={[0,4,4,0]} name="Faturamento" />
                 </BarChart>
               </ResponsiveContainer>}
@@ -193,7 +193,7 @@ export function TabFinanceiro({ sales, products, customers, productById, custome
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,58,79,0.08)" horizontal={false} />
                   <XAxis type="number" tick={{ fontSize: 10, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
                   <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 10, fill: "#3d3830" }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v?: number) => fmt(v ?? 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+                  <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
                   <Bar dataKey="total" fill="#2d5470" radius={[0,4,4,0]} name="Total gasto" />
                 </BarChart>
               </ResponsiveContainer>}
@@ -211,7 +211,7 @@ export function TabFinanceiro({ sales, products, customers, productById, custome
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,148,63,0.10)" />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#7a7060" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
-                <Tooltip formatter={(v?: number) => fmt(v ?? 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+                <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
                 <Bar dataKey="value" radius={[4,4,0,0]} name="Faturamento">
                   {regionData.map((_: any, i: number) => <Cell key={i} fill={GOLD_PALETTE[i % GOLD_PALETTE.length]} />)}
                 </Bar>
