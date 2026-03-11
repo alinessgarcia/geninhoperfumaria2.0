@@ -1,4 +1,6 @@
-﻿import Parser from "rss-parser";
+export const dynamic = "force-dynamic";
+
+import Parser from "rss-parser";
 import { NextResponse } from "next/server";
 
 import {
