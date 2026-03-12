@@ -17,14 +17,14 @@ export type Customer = {
   contact: string; address: string; city: string; neighborhood: string; notes: string;
 };
 
-export type PaymentMethod = "dinheiro" | "pix" | "cartao_avista" | "cartao_parcelado";
+export type PaymentMethod = "dinheiro" | "pix" | "cartao_avista" | "cartao_parcelado" | "a_prazo";
 
 export type Sale = {
   id: string; productId: string; customerId: string;
   quantity: number; paymentMethod: PaymentMethod;
   installments: number; deposit: number; discount: number;
   unitSalePrice: number; unitCostPrice: number;
-  soldAt: string; notes: string;
+  soldAt: string; notes: string; dueDates: string;
 };
 
 export type NewsArticle = {

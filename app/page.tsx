@@ -17,6 +17,7 @@ import { TabInvestimentos } from "../components/TabInvestimentos";
 
 export default function Page() {
   const [tab, setTab] = useState<Tab>("dashboard");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
@@ -58,7 +59,7 @@ export default function Page() {
         installments: Number(r.installments ?? 1), deposit: Number(r.deposit ?? 0),
         discount: Number(r.discount ?? 0), unitSalePrice: Number(r.unit_sale_price ?? 0),
         unitCostPrice: Number(r.unit_cost_price ?? 0), soldAt: r.sold_at ?? "",
-        notes: r.notes ?? "",
+        notes: r.notes ?? "", dueDates: r.due_dates ?? "",
       })));
       setNews((nRes.data ?? []).map(r => ({
         id: r.id, title: r.title, url: r.url, source: r.source,
@@ -136,6 +137,9 @@ export default function Page() {
       {/* HEADER */}
       <header className="app-header">
         <div className="header-brand">
+          <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? "✕" : "☰"}
+          </button>
           <div className="header-logo">✦</div>
           <h1>Geninho <span>Perfumaria</span></h1>
         </div>
@@ -157,10 +161,10 @@ export default function Page() {
       </header>
 
       {/* SIDEBAR */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
         <span className="sidebar-section-label">Menu</span>
         {NAV.map(n => (
-          <button key={n.id} className={`nav-item ${tab === n.id ? "active" : ""}`} onClick={() => setTab(n.id)}>
+          <button key={n.id} className={`nav-item ${tab === n.id ? "active" : ""}`} onClick={() => { setTab(n.id); setIsMobileMenuOpen(false); }}>
             <span className="nav-icon">{n.icon}</span>
             {n.label}
             {n.badge ? <span className="nav-badge">{n.badge}</span> : null}

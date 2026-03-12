@@ -23,14 +23,14 @@ export function TabVendas({ sales, setSales, products, setProducts, customers, p
     productId: "", customerId: "", quantity: "1",
     paymentMethod: "dinheiro" as PaymentMethod, installments: "1",
     deposit: "0", discount: "0",
-    soldAt: new Date().toISOString().slice(0, 10), notes: "",
+    soldAt: new Date().toISOString().slice(0, 10), notes: "", dueDates: "",
   };
   const [form, setForm] = useState(emptyForm);
   const upd = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const selectedProduct = productById[form.productId];
   const total = selectedProduct ? (selectedProduct.sellPrice * parseNum(form.quantity)) - parseNum(form.discount) : 0;
-  const isParcelado = form.paymentMethod === "cartao_parcelado";
+  const isParcelado = form.paymentMethod === "cartao_parcelado" || form.paymentMethod === "a_prazo";
 
   const filteredSales = useMemo(() => {
     const q = search.toLowerCase();
@@ -56,7 +56,7 @@ export function TabVendas({ sales, setSales, products, setProducts, customers, p
       product_id: selectedProduct.id, customer_id: form.customerId, quantity: qty,
       payment_method: form.paymentMethod, installments, deposit, discount,
       unit_sale_price: selectedProduct.sellPrice, unit_cost_price: selectedProduct.costPrice,
-      sold_at: form.soldAt, notes: form.notes.trim(),
+      sold_at: form.soldAt, notes: form.notes.trim(), due_dates: form.dueDates.trim(),
     };
     const { data, error } = await supabase.from("sales").insert(payload).select("*").single();
     if (error || !data) { setFb({ kind: "error", text: error?.message ?? "Erro ao registrar venda." }); return; }
@@ -64,12 +64,12 @@ export function TabVendas({ sales, setSales, products, setProducts, customers, p
     const newStock = selectedProduct.stock - qty;
     await supabase.from("products").update({ stock: newStock }).eq("id", selectedProduct.id);
 
-    setSales((prev: Sale[]) => [{ id: data.id, productId: data.product_id, customerId: data.customer_id, quantity: qty, paymentMethod: data.payment_method as PaymentMethod, installments, deposit, discount, unitSalePrice: data.unit_sale_price, unitCostPrice: data.unit_cost_price, soldAt: data.sold_at, notes: data.notes ?? "" }, ...prev]);
+    setSales((prev: Sale[]) => [{ id: data.id, productId: data.product_id, customerId: data.customer_id, quantity: qty, paymentMethod: data.payment_method as PaymentMethod, installments, deposit, discount, unitSalePrice: data.unit_sale_price, unitCostPrice: data.unit_cost_price, soldAt: data.sold_at, notes: data.notes ?? "", dueDates: data.due_dates ?? "" }, ...prev]);
     setProducts((prev: Product[]) => prev.map((p: Product) => p.id === selectedProduct.id ? { ...p, stock: newStock } : p));
 
     const customer = customerById[form.customerId];
     setFb({ kind: "ok", text: `Venda registrada para ${customer?.name ?? "cliente"}. Estoque atualizado.` });
-    setForm(f => ({ ...f, quantity: "1", installments: "1", deposit: "0", discount: "0", notes: "" }));
+    setForm(f => ({ ...f, quantity: "1", installments: "1", deposit: "0", discount: "0", notes: "", dueDates: "" }));
   };
 
   return (
@@ -124,10 +124,11 @@ export function TabVendas({ sales, setSales, products, setProducts, customers, p
                   <option value="pix">⚡ Pix</option>
                   <option value="cartao_avista">💳 Cartão à vista</option>
                   <option value="cartao_parcelado">💳 Cartão parcelado</option>
+                  <option value="a_prazo">📝 A prazo / Fiado</option>
                 </select>
               </div>
               <div className="field">
-                <label>Parcelas {!isParcelado && "(só cartão parcelado)"}</label>
+                <label>Parcelas {!isParcelado && "(só cartão parcelado ou a prazo)"}</label>
                 <select value={form.installments} onChange={e => upd("installments", e.target.value)} disabled={!isParcelado}>
                   {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
                     <option key={n} value={n}>{n}x{n > 1 && selectedProduct ? ` de ${fmt((selectedProduct.sellPrice * parseNum(form.quantity) - parseNum(form.discount)) / n)}` : ""}</option>
@@ -142,6 +143,12 @@ export function TabVendas({ sales, setSales, products, setProducts, customers, p
                 <label>Sinal / Entrada (R$)</label>
                 <input type="number" min={0} step="0.01" value={form.deposit} onChange={e => upd("deposit", e.target.value)} />
               </div>
+              {form.paymentMethod === "a_prazo" && (
+                <div className="field">
+                  <label>Datas de Vencimento</label>
+                  <input value={form.dueDates} onChange={e => upd("dueDates", e.target.value)} placeholder="Ex.: Todo dia 10" />
+                </div>
+              )}
               <div className="field span-2">
                 <label>Observações</label>
                 <input value={form.notes} onChange={e => upd("notes", e.target.value)} placeholder="Anotações sobre a venda…" />
@@ -179,9 +186,10 @@ export function TabVendas({ sales, setSales, products, setProducts, customers, p
                     <div className="list-item-title">{p ? `${p.name} · ${p.ml}ml` : "Produto removido"}</div>
                     <div className="list-item-sub">
                       {c?.name ?? "—"} · {fmtDate(s.soldAt)} · {PAY_LABELS[s.paymentMethod]}
-                      {s.paymentMethod === "cartao_parcelado" && s.installments > 1 && ` ${s.installments}x`}
+                      {s.installments > 1 && ` ${s.installments}x`}
                       {s.deposit > 0 && ` · Sinal: ${fmt(s.deposit)}`}
                       {s.discount > 0 && ` · Desc.: ${fmt(s.discount)}`}
+                      {s.dueDates && <span style={{ color: "var(--info)" }}> · Venc.: {s.dueDates}</span>}
                     </div>
                     {s.notes && <div style={{ fontSize: "0.75rem", color: "var(--muted)", marginTop: "0.15rem" }}>📝 {s.notes}</div>}
                   </div>

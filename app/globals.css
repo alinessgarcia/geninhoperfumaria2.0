@@ -125,6 +125,19 @@ a { color: inherit; text-decoration: none; }
   color: var(--gold);
 }
 
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0;
+  margin-right: 0.2rem;
+  align-items: center;
+  justify-content: center;
+}
+
 .header-alerts {
   display: flex;
   align-items: center;
@@ -758,6 +771,17 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
   .sidebar { display: none; }
+  .sidebar.mobile-open {
+    display: flex;
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    width: 260px;
+    height: calc(100vh - var(--header-h));
+    z-index: 999;
+    box-shadow: var(--shadow-lg);
+  }
+  .mobile-menu-btn { display: flex; }
   .app-shell { grid-template-columns: 1fr; }
   .main-content { padding: 1rem; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }

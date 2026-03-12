@@ -22,7 +22,7 @@ export const STATUS_ICON: Record<CustomerStatus, string> = {
   ativo: "✓", inadimplente: "⚠", fiel: "★", vip: "♦"
 };
 export const PAY_LABELS: Record<PaymentMethod, string> = {
-  dinheiro: "Dinheiro", pix: "Pix", cartao_avista: "Cartão à vista", cartao_parcelado: "Cartão parcelado"
+  dinheiro: "Dinheiro", pix: "Pix", cartao_avista: "Cartão à vista", cartao_parcelado: "Cartão parcelado", a_prazo: "A prazo / Fiado"
 };
 
 export const GOLD_PALETTE = ["#b8943f", "#d4a853", "#e8c470", "#f0deb0", "#3b6a8c", "#1e3a4f"];
