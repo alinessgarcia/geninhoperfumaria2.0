@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { hasSupabaseConfig, supabase } from "../lib/supabaseClient";
+import type { User } from "@supabase/supabase-js";
 
 import type { Product, Customer, Sale, NewsArticle, Tab, CustomerStatus, PaymentMethod } from "../components/types";
 import { startOfWeek, startOfMonth, startOfQuarter, startOfYear, toDate } from "../components/helpers";
@@ -24,6 +25,22 @@ export default function Page() {
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  // ─── AUTH ───────────────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  };
 
   // ─── LOAD DATA ──────────────────────────────────────────────────────────────
 
@@ -196,6 +213,16 @@ export default function Page() {
           )}
           {lowStockProducts.length === 0 && inadimplentes.length === 0 && (
             <span className="alert-pill ok">✓ Tudo em ordem</span>
+          )}
+        </div>
+        <div className="header-user">
+          {user && (
+            <>
+              <span className="header-user-email">{user.email}</span>
+              <button className="header-logout-btn" onClick={handleLogout} title="Sair">
+                ↪ Sair
+              </button>
+            </>
           )}
         </div>
       </header>

@@ -41,6 +41,7 @@ create table if not exists public.sales (
   unit_sale_price numeric(12,2) not null default 0,
   unit_cost_price numeric(12,2) not null default 0,
   discount numeric(12,2) not null default 0,
+  due_dates text,
   sold_at date not null,
   notes text,
   created_at timestamptz not null default now()
@@ -56,6 +57,7 @@ create table if not exists public.news_articles (
   created_at timestamptz not null default now()
 );
 
+-- Triggers
 create or replace function public.touch_updated_at()
 returns trigger as $$
 begin
@@ -72,16 +74,25 @@ drop trigger if exists customers_touch_updated_at on public.customers;
 create trigger customers_touch_updated_at before update on public.customers
 for each row execute procedure public.touch_updated_at();
 
+-- RLS: Require authenticated users
 alter table public.products enable row level security;
 alter table public.customers enable row level security;
 alter table public.sales enable row level security;
 alter table public.news_articles enable row level security;
 
+-- Authenticated-only policies (replaces open "public" policies)
 drop policy if exists "public products" on public.products;
-create policy "public products" on public.products for all using (true) with check (true);
+create policy "authenticated products" on public.products
+  for all using (auth.uid() is not null) with check (auth.uid() is not null);
+
 drop policy if exists "public customers" on public.customers;
-create policy "public customers" on public.customers for all using (true) with check (true);
+create policy "authenticated customers" on public.customers
+  for all using (auth.uid() is not null) with check (auth.uid() is not null);
+
 drop policy if exists "public sales" on public.sales;
-create policy "public sales" on public.sales for all using (true) with check (true);
+create policy "authenticated sales" on public.sales
+  for all using (auth.uid() is not null) with check (auth.uid() is not null);
+
 drop policy if exists "public news_articles" on public.news_articles;
-create policy "public news_articles" on public.news_articles for all using (true) with check (true);
+create policy "authenticated news_articles" on public.news_articles
+  for all using (auth.uid() is not null) with check (auth.uid() is not null);
