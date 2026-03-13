@@ -83,98 +83,105 @@ export function TabVendas({ sales, setSales, products, setProducts, customers, p
 
       <div className="grid-2">
         <div className="card">
-          <div className="card-title">Registrar Venda</div>
-          <div className="card-subtitle">Baixa automática no estoque</div>
-          <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <div className="field span-2">
-                <label>Produto *</label>
+          <h3 className="card-title">Novo Registro de Venda</h3>
+          <p className="card-subtitle">Lançamento com baixa automática no estoque</p>
+          <form onSubmit={handleSubmit} style={{ marginTop: "1.5rem" }}>
+            <div className="form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div style={{ gridColumn: "span 2" }}>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Selecione o Perfume *</label>
                 <select value={form.productId} onChange={e => upd("productId", e.target.value)}>
-                  <option value="">Selecione o produto…</option>
+                  <option value="">Escolha um item do estoque…</option>
                   {products.map((p: Product) => (
                     <option key={p.id} value={p.id} disabled={p.stock === 0}>
-                      {p.name}{p.brand ? ` (${p.brand})` : ""} · {p.ml}ml · {fmt(p.sellPrice)} · Estoque: {p.stock}
+                      {p.name} · {p.ml}ml ({fmt(p.sellPrice)}) · Est: {p.stock}
                     </option>
                   ))}
                 </select>
               </div>
-              <div className="field span-2">
-                <label>Cliente *</label>
+              <div style={{ gridColumn: "span 2" }}>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Selecione o Cliente *</label>
                 <select value={form.customerId} onChange={e => upd("customerId", e.target.value)}>
-                  <option value="">Selecione o cliente…</option>
+                  <option value="">Buscar cliente na carteira…</option>
                   {customers.map((c: Customer) => (
                     <option key={c.id} value={c.id}>
-                      {STATUS_ICON[c.status]} {c.name}{c.contact ? ` · ${c.contact}` : ""}
+                      {STATUS_ICON[c.status]} {c.name} {c.contact && `(${c.contact})`}
                     </option>
                   ))}
                 </select>
               </div>
-              <div className="field">
-                <label>Quantidade</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Quantidade</label>
                 <input type="number" min={1} value={form.quantity} onChange={e => upd("quantity", e.target.value)} />
               </div>
-              <div className="field">
-                <label>Data da venda</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Data</label>
                 <input type="date" value={form.soldAt} onChange={e => upd("soldAt", e.target.value)} />
               </div>
-              <div className="field">
-                <label>Forma de pagamento</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Forma de Pagto.</label>
                 <select value={form.paymentMethod} onChange={e => upd("paymentMethod", e.target.value)}>
-                  <option value="dinheiro">💵 Dinheiro</option>
-                  <option value="pix">⚡ Pix</option>
-                  <option value="cartao_avista">💳 Cartão à vista</option>
-                  <option value="cartao_parcelado">💳 Cartão parcelado</option>
-                  <option value="a_prazo">📝 A prazo / Fiado</option>
+                  <option value="dinheiro">Dinheiro</option>
+                  <option value="pix">Pix</option>
+                  <option value="cartao_avista">Cartão (à vista)</option>
+                  <option value="cartao_parcelado">Cartão (parcelado)</option>
+                  <option value="a_prazo">A prazo / Fiado</option>
                 </select>
               </div>
-              <div className="field">
-                <label>Parcelas {!isParcelado && "(só cartão parcelado ou a prazo)"}</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Parcelas</label>
                 <select value={form.installments} onChange={e => upd("installments", e.target.value)} disabled={!isParcelado}>
                   {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
-                    <option key={n} value={n}>{n}x{n > 1 && selectedProduct ? ` de ${fmt((selectedProduct.sellPrice * parseNum(form.quantity) - parseNum(form.discount)) / n)}` : ""}</option>
+                    <option key={n} value={n}>{n}x</option>
                   ))}
                 </select>
               </div>
-              <div className="field">
-                <label>Desconto (R$)</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Desconto (R$)</label>
                 <input type="number" min={0} step="0.01" value={form.discount} onChange={e => upd("discount", e.target.value)} />
               </div>
-              <div className="field">
-                <label>Sinal / Entrada (R$)</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Sinal / Entrada</label>
                 <input type="number" min={0} step="0.01" value={form.deposit} onChange={e => upd("deposit", e.target.value)} />
               </div>
-              {form.paymentMethod === "a_prazo" && (
-                <div className="field">
-                  <label>Datas de Vencimento</label>
-                  <input value={form.dueDates} onChange={e => upd("dueDates", e.target.value)} placeholder="Ex.: Todo dia 10" />
-                </div>
-              )}
-              <div className="field span-2">
-                <label>Observações</label>
-                <input value={form.notes} onChange={e => upd("notes", e.target.value)} placeholder="Anotações sobre a venda…" />
+              <div style={{ gridColumn: "span 2" }}>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Datas combinadas para pagamento</label>
+                <input value={form.dueDates} onChange={e => upd("dueDates", e.target.value)} placeholder="Ex.: Todo dia 10 e 20..." />
+              </div>
+              <div style={{ gridColumn: "span 2" }}>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Observações Internas</label>
+                <input value={form.notes} onChange={e => upd("notes", e.target.value)} placeholder="Notas sobre a venda…" />
               </div>
             </div>
+
             {selectedProduct && (
-              <div style={{ background: "var(--gold-ghost)", border: "1px solid var(--gold-border)", borderRadius: 10, padding: "0.7rem 0.9rem", marginTop: "0.75rem", fontSize: "0.88rem" }}>
-                <strong>Total da venda: {fmt(total)}</strong>
-                {isParcelado && parseNum(form.installments) > 1 && <span style={{ color: "var(--muted)" }}> · {form.installments}x de {fmt(total / parseNum(form.installments))}</span>}
-                {parseNum(form.deposit) > 0 && <span style={{ color: "var(--muted)" }}> · Restante: {fmt(total - parseNum(form.deposit))}</span>}
+              <div style={{ background: "rgba(212,175,55,0.05)", border: "1px solid var(--line)", padding: "1rem", marginTop: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.75rem", color: "var(--muted)", textTransform: "uppercase" }}>Total a Receber</span>
+                  <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--gold)" }}>{fmt(total)}</span>
+                </div>
+                {isParcelado && parseNum(form.installments) > 1 && (
+                  <div style={{ fontSize: "0.75rem", color: "var(--muted)", textAlign: "right", marginTop: "0.25rem" }}>
+                    {form.installments}x de {fmt(total / parseNum(form.installments))}
+                  </div>
+                )}
               </div>
             )}
-            <div className="form-actions">
-              <button className="btn btn-primary" type="submit">Registrar venda</button>
+
+            <div style={{ marginTop: "1.5rem" }}>
+              <button className="primary" type="submit" style={{ width: "100%" }}>FINALIZAR VENDA</button>
             </div>
             <FeedbackMsg fb={fb} />
           </form>
         </div>
 
         <div className="card">
-          <div className="card-title">Histórico de Vendas</div>
-          <div className="filter-bar">
-            <input className="search-input" placeholder="Buscar por produto ou cliente…" value={search} onChange={e => setSearch(e.target.value)} />
+          <h3 className="card-title">Fluxo de Pedidos</h3>
+          <p className="card-subtitle">Histórico recente de transações</p>
+          <div style={{ margin: "1.25rem 0" }}>
+            <input placeholder="Buscar produto ou cliente…" value={search} onChange={e => setSearch(e.target.value)} style={{ padding: "0.6rem 1rem", fontSize: "0.85rem" }} />
           </div>
           <div className="list" style={{ maxHeight: 540, overflowY: "auto" }}>
-            {filteredSales.length === 0 && <div className="empty-state"><div className="empty-icon">🛍</div><p>Nenhuma venda encontrada</p></div>}
+            {filteredSales.length === 0 && <div style={{ textAlign: "center", padding: "3rem", opacity: 0.5 }}>Sem registros encontrados</div>}
             {filteredSales.map((s: Sale) => {
               const p = productById[s.productId];
               const c = customerById[s.customerId];
@@ -182,20 +189,19 @@ export function TabVendas({ sales, setSales, products, setProducts, customers, p
               const profit = (s.unitSalePrice - s.unitCostPrice) * s.quantity - s.discount;
               return (
                 <div key={s.id} className="list-item">
-                  <div className="list-item-main">
-                    <div className="list-item-title">{p ? `${p.name} · ${p.ml}ml` : "Produto removido"}</div>
-                    <div className="list-item-sub">
-                      {c?.name ?? "—"} · {fmtDate(s.soldAt)} · {PAY_LABELS[s.paymentMethod]}
-                      {s.installments > 1 && ` ${s.installments}x`}
-                      {s.deposit > 0 && ` · Sinal: ${fmt(s.deposit)}`}
-                      {s.discount > 0 && ` · Desc.: ${fmt(s.discount)}`}
-                      {s.dueDates && <span style={{ color: "var(--info)" }}> · Venc.: {s.dueDates}</span>}
+                  <div style={{ flex: 1 }}>
+                    <div className="list-item-title" style={{ fontWeight: 700 }}>
+                      {p ? p.name : <span style={{ color: "var(--danger)" }}>Removido</span>}
                     </div>
-                    {s.notes && <div style={{ fontSize: "0.75rem", color: "var(--muted)", marginTop: "0.15rem" }}>📝 {s.notes}</div>}
+                    <div className="list-item-sub">
+                      {c?.name || "Cliente Excluído"} · {fmtDate(s.soldAt)} · {PAY_LABELS[s.paymentMethod]} {s.installments > 1 && `${s.installments}x`}
+                    </div>
+                    {s.dueDates && <div style={{ fontSize: "0.7rem", color: "var(--gold)", marginTop: "0.25rem", fontStyle: "italic" }}>📅 Venc: {s.dueDates}</div>}
+                    {s.notes && <div style={{ fontSize: "0.7rem", color: "var(--muted)", marginTop: "0.4rem", borderLeft: "2px solid var(--line)", paddingLeft: "0.5rem" }}>{s.notes}</div>}
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.2rem" }}>
-                    <span className="badge badge-gold">{fmt(total)}</span>
-                    <span style={{ fontSize: "0.72rem", color: profit >= 0 ? "var(--ok)" : "var(--danger)" }}>Lucro: {fmt(profit)}</span>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontWeight: 800, color: "var(--gold)" }}>{fmt(total)}</div>
+                    <div style={{ fontSize: "0.7rem", color: profit >= 0 ? "var(--emerald-light)" : "var(--warn)" }}>Lucro: {fmt(profit)}</div>
                   </div>
                 </div>
               );

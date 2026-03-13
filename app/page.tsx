@@ -28,8 +28,13 @@ export default function Page() {
   // ─── LOAD DATA ──────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    if (!hasSupabaseConfig) { setLoadError("Supabase não configurado."); setLoading(false); return; }
     const load = async () => {
+      if (!hasSupabaseConfig) { 
+        setLoadError("Supabase não configurado."); 
+        setLoading(false); 
+        return; 
+      }
+
       const [pRes, cRes, sRes, nRes] = await Promise.all([
         supabase.from("products").select("*").order("created_at", { ascending: false }),
         supabase.from("customers").select("*").order("created_at", { ascending: false }),
@@ -81,23 +86,57 @@ export default function Page() {
   const now = new Date();
   const periodStart = { week: startOfWeek(now), month: startOfMonth(now), quarter: startOfQuarter(now), year: startOfYear(now) };
 
-  const calcSummary = (from: Date) => {
+  const summaryWeek = useMemo(() => {
     let revenue = 0, profit = 0, count = 0;
     for (const s of sales) {
       const d = toDate(s.soldAt);
-      if (d < from) continue;
+      if (d < periodStart.week) continue;
+      const r = (s.unitSalePrice - s.discount / s.quantity) * s.quantity;
+       revenue += r;
+      profit += r - s.unitCostPrice * s.quantity;
+      count++;
+    }
+    return { revenue, profit, count };
+  }, [sales, periodStart.week]);
+
+  const summaryMonth = useMemo(() => {
+    let revenue = 0, profit = 0, count = 0;
+    for (const s of sales) {
+      const d = toDate(s.soldAt);
+      if (d < periodStart.month) continue;
       const r = (s.unitSalePrice - s.discount / s.quantity) * s.quantity;
       revenue += r;
       profit += r - s.unitCostPrice * s.quantity;
       count++;
     }
     return { revenue, profit, count };
-  };
+  }, [sales, periodStart.month]);
 
-  const summaryWeek = useMemo(() => calcSummary(periodStart.week), [sales]);
-  const summaryMonth = useMemo(() => calcSummary(periodStart.month), [sales]);
-  const summaryQuarter = useMemo(() => calcSummary(periodStart.quarter), [sales]);
-  const summaryYear = useMemo(() => calcSummary(periodStart.year), [sales]);
+  const summaryQuarter = useMemo(() => {
+    let revenue = 0, profit = 0, count = 0;
+    for (const s of sales) {
+      const d = toDate(s.soldAt);
+      if (d < periodStart.quarter) continue;
+      const r = (s.unitSalePrice - s.discount / s.quantity) * s.quantity;
+      revenue += r;
+      profit += r - s.unitCostPrice * s.quantity;
+      count++;
+    }
+    return { revenue, profit, count };
+  }, [sales, periodStart.quarter]);
+
+  const summaryYear = useMemo(() => {
+    let revenue = 0, profit = 0, count = 0;
+    for (const s of sales) {
+      const d = toDate(s.soldAt);
+      if (d < periodStart.year) continue;
+      const r = (s.unitSalePrice - s.discount / s.quantity) * s.quantity;
+      revenue += r;
+      profit += r - s.unitCostPrice * s.quantity;
+      count++;
+    }
+    return { revenue, profit, count };
+  }, [sales, periodStart.year]);
 
   const totalStockUnits = useMemo(() => products.reduce((a, p) => a + p.stock, 0), [products]);
   const totalInventoryCost = useMemo(() => products.reduce((a, p) => a + p.stock * p.costPrice, 0), [products]);
@@ -114,20 +153,21 @@ export default function Page() {
   ];
 
   if (loading) return (
-    <div style={{ display: "grid", placeItems: "center", minHeight: "100vh", fontFamily: "DM Sans, sans-serif", color: "#7a7060" }}>
+    <div className="app-shell" style={{ display: "grid", placeItems: "center", minHeight: "100vh" }}>
       <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>✦</div>
-        <p>Carregando Geninho Perfumaria…</p>
+        <div className="header-logo" style={{ fontSize: "3rem", marginBottom: "1.5rem" }}>✦</div>
+        <p style={{ color: "var(--muted)", fontStyle: "italic" }}>Carregando Geninho Perfumaria…</p>
       </div>
     </div>
   );
 
   if (loadError) return (
-    <div style={{ display: "grid", placeItems: "center", minHeight: "100vh", fontFamily: "DM Sans, sans-serif" }}>
-      <div style={{ textAlign: "center", color: "#c44040", padding: "2rem" }}>
-        <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚠</div>
-        <p><strong>Erro de conexão</strong></p>
-        <p style={{ color: "#7a7060", marginTop: "0.5rem" }}>{loadError}</p>
+    <div className="app-shell" style={{ display: "grid", placeItems: "center", minHeight: "100vh" }}>
+      <div className="card" style={{ textAlign: "center", maxWidth: "400px" }}>
+        <div style={{ fontSize: "2.5rem", marginBottom: "1rem", color: "var(--danger)" }}>⚠</div>
+        <h2 className="card-title">Erro de Conexão</h2>
+        <p style={{ color: "var(--muted)" }}>{loadError}</p>
+        <button className="primary" style={{ marginTop: "1.5rem" }} onClick={() => window.location.reload()}>Recarregar Sistema</button>
       </div>
     </div>
   );

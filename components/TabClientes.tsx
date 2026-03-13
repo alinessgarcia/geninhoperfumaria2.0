@@ -46,7 +46,7 @@ export function TabClientes({ customers, setCustomers, sales, productById }: Pro
     if (!form.name.trim()) { setFb({ kind: "error", text: "Informe o nome do cliente." }); return; }
     const payload = {
       name: form.name.trim(), status: form.status, risk: form.risk, origin: form.origin,
-      referred_by: form.referredBy.trim() || null, contact: form.contact.trim(),
+      referred_by: form.referredBy.trim() || "", contact: form.contact.trim(),
       address: form.address.trim(), city: form.city.trim(), neighborhood: form.neighborhood.trim(), notes: form.notes.trim(),
     };
     if (editingId) {
@@ -87,128 +87,126 @@ export function TabClientes({ customers, setCustomers, sales, productById }: Pro
 
       <div className="grid-2">
         <div className="card">
-          <div className="card-title">{editingId ? "Editar Cliente" : "Cadastrar Cliente"}</div>
-          <div className="card-subtitle">Informações do cliente</div>
-          <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <div className="field span-2">
-                <label>Nome completo *</label>
+          <h3 className="card-title">{editingId ? "Editar Perfil" : "Novo Cliente"}</h3>
+          <p className="card-subtitle">Cadastro e gestão de clientes</p>
+          <form onSubmit={handleSubmit} style={{ marginTop: "1.5rem" }}>
+            <div className="form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div style={{ gridColumn: "span 2" }}>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Nome Completo *</label>
                 <input value={form.name} onChange={e => upd("name", e.target.value)} placeholder="Ex.: Maria Oliveira" />
               </div>
-              <div className="field">
-                <label>Status</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Status</label>
                 <select value={form.status} onChange={e => upd("status", e.target.value)}>
-                  <option value="ativo">✓ Ativo</option>
-                  <option value="inadimplente">⚠ Inadimplente</option>
-                  <option value="fiel">★ Fiel</option>
-                  <option value="vip">♦ VIP</option>
+                  <option value="ativo">Ativo</option>
+                  <option value="inadimplente">Inadimplente</option>
+                  <option value="fiel">Fiel</option>
+                  <option value="vip">VIP</option>
                 </select>
               </div>
-              <div className="field">
-                <label>Histórico</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Histórico</label>
                 <select value={form.risk} onChange={e => upd("risk", e.target.value)}>
-                  <option value="nunca_deu_problema">Nunca deu problema</option>
-                  <option value="ja_deu_problema">Já deu problema</option>
+                  <option value="nunca_deu_problema">Sem histórico de problemas</option>
+                  <option value="ja_deu_problema">Já teve problemas</option>
                 </select>
               </div>
-              <div className="field">
-                <label>Origem</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Origem</label>
                 <select value={form.origin} onChange={e => upd("origin", e.target.value)}>
-                  <option value="direto">Direto</option>
-                  <option value="indicado">Indicado</option>
+                  <option value="direto">Venda Direta</option>
+                  <option value="indicado">Indicação</option>
                 </select>
               </div>
-              <div className="field">
-                <label>Indicado por {form.origin !== "indicado" && "(opcional)"}</label>
-                <input value={form.referredBy} onChange={e => upd("referredBy", e.target.value)} placeholder="Nome de quem indicou" disabled={form.origin !== "indicado"} />
-              </div>
-              <div className="field">
-                <label>Contato / WhatsApp</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Contato (WhatsApp)</label>
                 <input value={form.contact} onChange={e => upd("contact", e.target.value)} placeholder="(11) 99999-9999" />
               </div>
-              <div className="field">
-                <label>Bairro</label>
+              <div style={{ gridColumn: "span 2" }}>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Endereço</label>
+                <input value={form.address} onChange={e => upd("address", e.target.value)} placeholder="Rua, número, complemento" />
+              </div>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Bairro</label>
                 <input value={form.neighborhood} onChange={e => upd("neighborhood", e.target.value)} placeholder="Ex.: Centro" />
               </div>
-              <div className="field">
-                <label>Cidade</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Cidade</label>
                 <input value={form.city} onChange={e => upd("city", e.target.value)} placeholder="Ex.: São Paulo" />
               </div>
-              <div className="field span-2">
-                <label>Endereço</label>
-                <input value={form.address} onChange={e => upd("address", e.target.value)} placeholder="Rua, número" />
-              </div>
-              <div className="field span-2">
-                <label>Observações</label>
-                <textarea value={form.notes} onChange={e => upd("notes", e.target.value)} placeholder="Preferências, anotações…" style={{ minHeight: 70 }} />
-              </div>
             </div>
-            <div className="form-actions">
-              <button className="btn btn-primary" type="submit">{editingId ? "Salvar alterações" : "Cadastrar cliente"}</button>
-              {editingId && <button className="btn btn-secondary" type="button" onClick={() => { setEditingId(null); setForm(emptyForm); setFb(null); }}>Cancelar</button>}
+            <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}>
+              <button className="primary" type="submit" style={{ flex: 1 }}>{editingId ? "Salvar Perfil" : "Cadastrar Cliente"}</button>
+              {editingId && <button type="button" onClick={() => { setEditingId(null); setForm(emptyForm); setFb(null); }} style={{ background: "transparent", border: "1px solid var(--line)", color: "var(--muted)", padding: "0 1rem" }}>✕</button>}
             </div>
             <FeedbackMsg fb={fb} />
           </form>
         </div>
 
         <div className="card">
-          <div className="card-title">Carteira de Clientes</div>
-          <div className="filter-bar" style={{ flexWrap: "wrap" }}>
-            <input className="search-input" placeholder="Buscar cliente…" value={search} onChange={e => setSearch(e.target.value)} />
-            <div className="tab-bar" style={{ marginBottom: 0 }}>
+          <h3 className="card-title">Base de Clientes</h3>
+          <p className="card-subtitle">Gerenciamento da carteira</p>
+          <div style={{ margin: "1.25rem 0", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            <input placeholder="Buscar nome ou cidade…" value={search} onChange={e => setSearch(e.target.value)} style={{ padding: "0.6rem 1rem", fontSize: "0.85rem", flex: 1 }} />
+            <div style={{ display: "flex", border: "1px solid var(--line)", background: "var(--bg)" }}>
               {(["todos", "ativo", "inadimplente", "fiel", "vip"] as const).map(s => (
-                <button key={s} className={`tab-btn ${filterStatus === s ? "active" : ""}`} onClick={() => setFilterStatus(s)}>
-                  {s === "todos" ? `Todos (${statusCounts.todos})` :
-                   s === "ativo" ? `Ativos (${statusCounts.ativo || 0})` :
-                   s === "inadimplente" ? `⚠ Inad. (${statusCounts.inadimplente || 0})` :
-                   s === "fiel" ? `★ Fiéis (${statusCounts.fiel || 0})` :
-                   `♦ VIP (${statusCounts.vip || 0})`}
+                <button key={s} onClick={() => setFilterStatus(s)} style={{ 
+                  background: filterStatus === s ? "var(--gold)" : "transparent",
+                  color: filterStatus === s ? "var(--bg-sidebar)" : "var(--muted)",
+                  border: "none", padding: "0.5rem 0.75rem", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", textTransform: "uppercase"
+                }}>
+                  {s === "todos" ? "ALL" : s.slice(0, 3)}
                 </button>
               ))}
             </div>
           </div>
           <div className="list" style={{ maxHeight: 520, overflowY: "auto" }}>
-            {filtered.length === 0 && <div className="empty-state"><div className="empty-icon">👥</div><p>Nenhum cliente encontrado</p></div>}
+            {filtered.length === 0 && <div style={{ textAlign: "center", padding: "3rem", opacity: 0.5 }}>Nenhum cliente na lista</div>}
             {filtered.map((c: Customer) => (
-              <div key={c.id}>
-                <div className="list-item" style={{ cursor: "pointer" }} onClick={() => setExpandedId(expandedId === c.id ? null : c.id)}>
-                  <div className="list-item-main">
-                    <div className="list-item-title">
-                      <span className={`badge ${STATUS_BADGE[c.status]}`} style={{ marginRight: "0.4rem", fontSize: "0.68rem" }}>{STATUS_ICON[c.status]} {STATUS_LABELS[c.status]}</span>
+              <div key={c.id} style={{ marginBottom: "0.25rem" }}>
+                <div className="list-item" style={{ 
+                  cursor: "pointer", 
+                  background: expandedId === c.id ? "rgba(212,175,55,0.03)" : "transparent",
+                  borderLeft: c.status === "inadimplente" ? "3px solid var(--warn)" : "none"
+                }} onClick={() => setExpandedId(expandedId === c.id ? null : c.id)}>
+                  <div>
+                    <div className="list-item-title" style={{ fontWeight: 700 }}>
+                      <span style={{ color: STATUS_BADGE[c.status].includes("warn") ? "var(--warn)" : "var(--gold)", fontSize: "0.7rem", marginRight: "0.5rem" }}>
+                        {STATUS_ICON[c.status]}
+                      </span>
                       {c.name}
                     </div>
                     <div className="list-item-sub">
-                      {c.contact || "Sem contato"}
-                      {c.city && ` · ${c.neighborhood ? c.neighborhood + ", " : ""}${c.city}`}
-                      {c.origin === "indicado" && c.referredBy && <span style={{ color: "var(--info)" }}> · Indicado por {c.referredBy}</span>}
+                      {c.contact || "(sem contato)"} · {c.city || "S/ localização"}
                     </div>
                   </div>
-                  <div className="list-item-actions">
-                    <span className="badge badge-muted">{fmt(customerTotal(c.id))}</span>
-                    <button className="btn btn-ghost btn-icon" title="Expandir">{expandedId === c.id ? "▲" : "▼"}</button>
+                  <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                    <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--gold)" }}>{fmt(customerTotal(c.id))}</div>
+                    <span style={{ fontSize: "0.6rem", opacity: 0.4 }}>{expandedId === c.id ? "▲" : "▼"}</span>
                   </div>
                 </div>
                 {expandedId === c.id && (
-                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderTop: 0, borderRadius: "0 0 10px 10px", padding: "0.75rem 1rem", marginBottom: "0.1rem" }}>
-                    {c.risk === "ja_deu_problema" && <div style={{ color: "var(--danger)", fontSize: "0.8rem", marginBottom: "0.5rem" }}>⚠ Histórico: já deu problema</div>}
-                    {c.notes && <div style={{ color: "var(--muted)", fontSize: "0.82rem", marginBottom: "0.5rem" }}>📝 {c.notes}</div>}
-                    <div style={{ fontSize: "0.8rem", color: "var(--muted)", marginBottom: "0.5rem" }}>
-                      <strong>Compras ({customerSales(c.id).length}):</strong>
+                  <div style={{ padding: "1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--line)", borderTop: "none" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", fontSize: "0.8rem", color: "var(--muted)" }}>
+                      <div>
+                        <strong>Dados de Contato:</strong>
+                        <p>{c.contact || "—"}</p>
+                        <p>{c.address || "—"}</p>
+                        <p>{c.neighborhood && c.neighborhood + ", "}{c.city || "—"}</p>
+                      </div>
+                      <div>
+                        <strong>Observações:</strong>
+                        <p>{c.notes || "Nenhuma nota."}</p>
+                        <p style={{ marginTop: "0.5rem", color: c.risk === "ja_deu_problema" ? "var(--warn)" : "var(--emerald-light)" }}>
+                          Histórico: {c.risk === "ja_deu_problema" ? "Risco Identificado" : "Bom Pagador"}
+                        </p>
+                      </div>
                     </div>
-                    <div className="list" style={{ maxHeight: 160, overflowY: "auto" }}>
-                      {customerSales(c.id).slice(0, 5).map((s: Sale) => {
-                        const p = productById[s.productId];
-                        return (
-                          <div key={s.id} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", padding: "0.35rem 0", borderBottom: "1px solid var(--line)" }}>
-                            <span>{p ? `${p.name} · ${p.ml}ml` : "—"} · {fmtDate(s.soldAt)}</span>
-                            <strong>{fmt(s.unitSalePrice * s.quantity)}</strong>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div className="form-actions" style={{ marginTop: "0.6rem" }}>
-                      <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(c)}>Editar</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c.id)}>Excluir</button>
+                    <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px dashed var(--line)" }}>
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <button onClick={() => handleEdit(c)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--line)", color: "var(--muted)", padding: "4px 12px", fontSize: "0.7rem", fontWeight: 700 }}>EDITAR PERFIL</button>
+                        <button onClick={() => handleDelete(c.id)} style={{ background: "transparent", border: "1px solid var(--line)", color: "var(--danger)", padding: "4px 12px", fontSize: "0.7rem", fontWeight: 700 }}>EXCLUIR</button>
+                      </div>
                     </div>
                   </div>
                 )}

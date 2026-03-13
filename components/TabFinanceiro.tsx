@@ -106,117 +106,127 @@ export function TabFinanceiro({ sales, products, customers, productById, custome
       {/* KPIs */}
       <div className="kpi-grid" style={{ marginBottom: "1.25rem" }}>
         <div className="kpi-card">
-          <div className="kpi-icon">💵</div>
           <div className="kpi-label">Faturamento · {periodLabel[period]}</div>
           <div className="kpi-value gold">{fmt(current.revenue)}</div>
           <div className="kpi-sub">{current.count} vendas</div>
+          <div style={{ position: "absolute", right: "1.25rem", bottom: "1.25rem", opacity: 0.15, fontSize: "2rem" }}>💵</div>
         </div>
         <div className="kpi-card">
-          <div className="kpi-icon">📈</div>
           <div className="kpi-label">Lucro · {periodLabel[period]}</div>
           <div className="kpi-value ok">{fmt(current.profit)}</div>
           <div className="kpi-sub">Margem: {margin}%</div>
+          <div style={{ position: "absolute", right: "1.25rem", bottom: "1.25rem", opacity: 0.15, fontSize: "2rem" }}>📈</div>
         </div>
         <div className="kpi-card">
-          <div className="kpi-icon">🏆</div>
           <div className="kpi-label">Faturamento Anual</div>
           <div className="kpi-value">{fmt(summaryYear.revenue)}</div>
           <div className="kpi-sub">Lucro: {fmt(summaryYear.profit)}</div>
+          <div style={{ position: "absolute", right: "1.25rem", bottom: "1.25rem", opacity: 0.15, fontSize: "2rem" }}>🏆</div>
         </div>
         <div className="kpi-card">
-          <div className="kpi-icon">🎯</div>
           <div className="kpi-label">Ticket Médio</div>
-          <div className="kpi-value">{current.count > 0 ? fmt(current.revenue / current.count) : "R$ —"}</div>
+          <div className="kpi-value" style={{ color: "var(--text)" }}>{current.count > 0 ? fmt(current.revenue / current.count) : "R$ —"}</div>
           <div className="kpi-sub">por venda no período</div>
+          <div style={{ position: "absolute", right: "1.25rem", bottom: "1.25rem", opacity: 0.15, fontSize: "2rem" }}>🎯</div>
         </div>
       </div>
 
       {/* Charts row 1 */}
       <div className="grid-2" style={{ marginBottom: "1rem" }}>
         <div className="card">
-          <div className="card-title">Evolução — Últimos 12 Meses</div>
-          <div className="card-subtitle">Faturamento vs. Lucro mensal</div>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,148,63,0.12)" />
-              <XAxis dataKey="mes" tick={{ fontSize: 10, fill: "#7a7060" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
-              <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Line type="monotone" dataKey="faturamento" stroke="#b8943f" strokeWidth={2.5} dot={false} name="Faturamento" />
-              <Line type="monotone" dataKey="lucro" stroke="#1e7c5a" strokeWidth={2} dot={false} name="Lucro" strokeDasharray="5 3" />
-            </LineChart>
-          </ResponsiveContainer>
+          <h3 className="card-title">Evolução — Últimos 12 Meses</h3>
+          <p className="card-subtitle">Faturamento vs. Lucro mensal</p>
+          <div style={{ height: 220, marginTop: "1rem" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(212,175,55,0.08)" vertical={false} />
+                <XAxis dataKey="mes" tick={{ fontSize: 10, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: "var(--muted)" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
+                <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ background: "var(--bg-sidebar)", border: "1px solid var(--line)", borderRadius: 0, fontSize: 11 }} />
+                <Legend wrapperStyle={{ fontSize: 12, paddingTop: "1rem" }} />
+                <Line type="monotone" dataKey="faturamento" stroke="var(--gold)" strokeWidth={3} dot={false} name="Faturamento" />
+                <Line type="monotone" dataKey="lucro" stroke="var(--emerald-light)" strokeWidth={2} dot={false} name="Lucro" strokeDasharray="5 3" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         <div className="card">
-          <div className="card-title">Formas de Pagamento</div>
-          <div className="card-subtitle">Distribuição por volume (R$)</div>
-          {paymentData.length === 0
-            ? <div className="empty-state"><p>Nenhuma venda registrada</p></div>
-            : <ResponsiveContainer width="100%" height={220}>
-                <PieChart>
-                  <Pie data={paymentData} cx="50%" cy="50%" outerRadius={85} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`} labelLine={false} fontSize={11}>
-                    {paymentData.map((_: any, i: number) => <Cell key={i} fill={GOLD_PALETTE[i % GOLD_PALETTE.length]} />)}
-                  </Pie>
-                  <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
-                </PieChart>
-              </ResponsiveContainer>}
+          <h3 className="card-title">Fontes de Receita</h3>
+          <p className="card-subtitle">Distribuição por forma de pagamento</p>
+          <div style={{ height: 220, marginTop: "1rem" }}>
+            {paymentData.length === 0
+              ? <div style={{ display: "grid", placeItems: "center", height: "100%", color: "var(--muted)", fontSize: "0.85rem" }}>Nenhum dado disponível</div>
+              : <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={paymentData} cx="50%" cy="50%" innerRadius={60} outerRadius={85} paddingAngle={5} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`} labelLine={false} style={{ fontSize: 10, fill: "var(--text)" }}>
+                      {paymentData.map((_, i) => <Cell key={i} fill={GOLD_PALETTE[i % GOLD_PALETTE.length]} stroke="rgba(255,255,255,0.05)" />)}
+                    </Pie>
+                    <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ background: "var(--bg-sidebar)", border: "1px solid var(--line)", borderRadius: 0, fontSize: 11 }} />
+                  </PieChart>
+                </ResponsiveContainer>}
+          </div>
         </div>
       </div>
 
       {/* Charts row 2 */}
       <div className="grid-2" style={{ marginBottom: "1rem" }}>
         <div className="card">
-          <div className="card-title">Produtos Mais Vendidos</div>
-          <div className="card-subtitle">Por faturamento total</div>
-          {topProducts.length === 0
-            ? <div className="empty-state"><p>Nenhuma venda registrada</p></div>
-            : <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={topProducts} layout="vertical" barSize={16}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,148,63,0.10)" horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 10, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
-                  <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 10, fill: "#3d3830" }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
-                  <Bar dataKey="revenue" fill="#b8943f" radius={[0,4,4,0]} name="Faturamento" />
-                </BarChart>
-              </ResponsiveContainer>}
+          <h3 className="card-title">Ranking de Produtos</h3>
+          <p className="card-subtitle">Top 6 por faturamento total</p>
+          <div style={{ height: 220, marginTop: "1rem" }}>
+            {topProducts.length === 0
+              ? <div style={{ display: "grid", placeItems: "center", height: "100%", color: "var(--muted)", fontSize: "0.85rem" }}>Nenhum dado disponível</div>
+              : <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topProducts} layout="vertical" barSize={14}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(212,175,55,0.08)" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "var(--muted)" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
+                    <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 9, fill: "var(--text)" }} axisLine={false} tickLine={false} />
+                    <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ background: "var(--bg-sidebar)", border: "1px solid var(--line)", borderRadius: 0, fontSize: 11 }} />
+                    <Bar dataKey="revenue" fill="var(--gold)" radius={[0,2,2,0]} name="Faturamento" />
+                  </BarChart>
+                </ResponsiveContainer>}
+          </div>
         </div>
 
         <div className="card">
-          <div className="card-title">Clientes que Mais Compram</div>
-          <div className="card-subtitle">Por valor total</div>
-          {topCustomers.length === 0
-            ? <div className="empty-state"><p>Nenhuma venda registrada</p></div>
-            : <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={topCustomers} layout="vertical" barSize={16}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,58,79,0.08)" horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 10, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
-                  <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 10, fill: "#3d3830" }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
-                  <Bar dataKey="total" fill="#2d5470" radius={[0,4,4,0]} name="Total gasto" />
-                </BarChart>
-              </ResponsiveContainer>}
+          <h3 className="card-title">Principais Clientes</h3>
+          <p className="card-subtitle">Por volume de compras (R$)</p>
+          <div style={{ height: 220, marginTop: "1rem" }}>
+            {topCustomers.length === 0
+              ? <div style={{ display: "grid", placeItems: "center", height: "100%", color: "var(--muted)", fontSize: "0.85rem" }}>Nenhum dado disponível</div>
+              : <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topCustomers} layout="vertical" barSize={14}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "var(--muted)" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
+                    <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 9, fill: "var(--text)" }} axisLine={false} tickLine={false} />
+                    <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ background: "var(--bg-sidebar)", border: "1px solid var(--line)", borderRadius: 0, fontSize: 11 }} />
+                    <Bar dataKey="total" fill="var(--emerald-light)" radius={[0,2,2,0]} name="Total gasto" />
+                  </BarChart>
+                </ResponsiveContainer>}
+          </div>
         </div>
       </div>
 
       {/* Region */}
       <div className="card">
-        <div className="card-title">Vendas por Região / Cidade</div>
-        <div className="card-subtitle">Distribuição geográfica dos clientes</div>
-        {regionData.length === 0
-          ? <div className="empty-state"><p>Cadastre cidades nos clientes para ver este relatório</p></div>
-          : <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={regionData} barSize={28}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,148,63,0.10)" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#7a7060" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "#7a7060" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
-                <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
-                <Bar dataKey="value" radius={[4,4,0,0]} name="Faturamento">
-                  {regionData.map((_: any, i: number) => <Cell key={i} fill={GOLD_PALETTE[i % GOLD_PALETTE.length]} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>}
+        <h3 className="card-title">Distribuição Geográfica</h3>
+        <p className="card-subtitle">Vendas por cidade ou bairro</p>
+        <div style={{ height: 200, marginTop: "1rem" }}>
+          {regionData.length === 0
+            ? <div style={{ display: "grid", placeItems: "center", height: "100%", color: "var(--muted)", fontSize: "0.85rem" }}>Nenhum dado disponível</div>
+            : <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={regionData} barSize={28}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(212,175,55,0.08)" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "var(--muted)" }} axisLine={false} tickLine={false} tickFormatter={v => `R$${v}`} />
+                  <Tooltip formatter={(v: any) => fmt(Number(v) || 0)} contentStyle={{ background: "var(--bg-sidebar)", border: "1px solid var(--line)", borderRadius: 0, fontSize: 11 }} />
+                  <Bar dataKey="value" radius={[2,2,0,0]} name="Faturamento">
+                    {regionData.map((_, i) => <Cell key={i} fill={GOLD_PALETTE[i % GOLD_PALETTE.length]} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>}
+        </div>
       </div>
     </div>
   );

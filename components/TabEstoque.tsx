@@ -78,81 +78,76 @@ export function TabEstoque({ products, setProducts, setSales, lowStock }: Props)
       </div>
 
       {lowStock.length > 0 && (
-        <div style={{ background: "var(--warn-bg)", border: "1px solid rgba(184,125,42,0.25)", borderRadius: 12, padding: "0.75rem 1rem", marginBottom: "1rem", display: "flex", gap: "0.6rem", alignItems: "center" }}>
-          <span style={{ fontSize: "1.1rem" }}>⚠</span>
-          <span style={{ color: "var(--warn)", fontWeight: 600, fontSize: "0.88rem" }}>
-            {lowStock.length} produto{lowStock.length > 1 ? "s" : ""} com estoque baixo (≤ 5 unidades): {lowStock.map((p: Product) => `${p.name} · ${p.ml}ml (${p.stock})`).join(", ")}
-          </span>
+        <div style={{ background: "rgba(180,83,9,0.05)", border: "1px solid var(--warn)", padding: "1rem", marginBottom: "1.5rem", display: "flex", gap: "0.75rem", alignItems: "center" }}>
+          <span style={{ fontSize: "1.25rem", color: "var(--warn)" }}>⚠</span>
+          <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>
+            <strong style={{ color: "var(--warn)" }}>Atenção:</strong> {lowStock.length} produto{lowStock.length > 1 ? "s" : ""} com estoque crítico (≤ 5 un.).
+          </p>
         </div>
       )}
 
       <div className="grid-2">
         <div className="card">
-          <div className="card-title">{editingId ? "Editar Produto" : "Cadastrar Perfume"}</div>
-          <div className="card-subtitle">Preencha os dados do produto</div>
-          <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <div className="field span-2">
-                <label>Nome do perfume *</label>
+          <h3 className="card-title">{editingId ? "Editar Produto" : "Novo Item"}</h3>
+          <p className="card-subtitle">Entre com os detalhes do perfume</p>
+          <form onSubmit={handleSubmit} style={{ marginTop: "1.5rem" }}>
+            <div className="form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div style={{ gridColumn: "span 2" }}>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Nome do perfume *</label>
                 <input value={form.name} onChange={e => upd("name", e.target.value)} placeholder="Ex.: Sauvage" />
               </div>
-
-              <div className="field">
-                <label>Categoria</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Categoria</label>
                 <input value={form.category} onChange={e => upd("category", e.target.value)} placeholder="Ex.: Masculino" />
               </div>
-              <div className="field">
-                <label>Volume (ml)</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Volume (ml)</label>
                 <input type="number" min={1} value={form.ml} onChange={e => upd("ml", e.target.value)} />
               </div>
-              <div className="field">
-                <label>Estoque atual</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Estoque Atual</label>
                 <input type="number" min={0} value={form.stock} onChange={e => upd("stock", e.target.value)} />
               </div>
-              <div className="field">
-                <label>Estoque mínimo (alerta)</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Estoque Mínimo</label>
                 <input type="number" min={0} value={form.stockMin} onChange={e => upd("stockMin", e.target.value)} />
               </div>
-              <div className="field">
-                <label>Custo por peça (R$)</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Custo (R$)</label>
                 <input type="number" min={0} step="0.01" value={form.costPrice} onChange={e => upd("costPrice", e.target.value)} />
               </div>
-              <div className="field span-2">
-                <label>Preço de venda (R$)</label>
+              <div>
+                <label style={{ fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: "0.4rem" }}>Venda (R$)</label>
                 <input type="number" min={0} step="0.01" value={form.sellPrice} onChange={e => upd("sellPrice", e.target.value)} />
               </div>
             </div>
-            <div className="form-actions">
-              <button className="btn btn-primary" type="submit">{editingId ? "Salvar alterações" : "Cadastrar produto"}</button>
-              {editingId && <button className="btn btn-secondary" type="button" onClick={() => { setEditingId(null); setForm(emptyForm); setFb(null); }}>Cancelar</button>}
+            <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}>
+              <button className="primary" type="submit" style={{ flex: 1 }}>{editingId ? "Salvar Alterações" : "Cadastrar Produto"}</button>
+              {editingId && <button type="button" onClick={() => { setEditingId(null); setForm(emptyForm); setFb(null); }} style={{ background: "transparent", border: "1px solid var(--line)", color: "var(--muted)", padding: "0 1rem" }}>✕</button>}
             </div>
             <FeedbackMsg fb={fb} />
           </form>
         </div>
 
         <div className="card">
-          <div className="card-title">Lista de Produtos</div>
-          <div className="card-subtitle">Clique em editar para alterar dados</div>
-          <div className="filter-bar">
-            <input className="search-input" placeholder="Buscar por nome, marca ou categoria…" value={search} onChange={e => setSearch(e.target.value)} />
+          <h3 className="card-title">Inventário</h3>
+          <p className="card-subtitle">Gerenciamento de estoque</p>
+          <div style={{ margin: "1.25rem 0" }}>
+            <input placeholder="Buscar por nome ou categoria…" value={search} onChange={e => setSearch(e.target.value)} style={{ padding: "0.6rem 1rem", fontSize: "0.85rem" }} />
           </div>
-          <div className="list" style={{ maxHeight: 480, overflowY: "auto" }}>
-            {filtered.length === 0 && <div className="empty-state"><div className="empty-icon">📦</div><p>Nenhum produto encontrado</p></div>}
+          <div className="list" style={{ maxHeight: 520, overflowY: "auto" }}>
+            {filtered.length === 0 && <div style={{ textAlign: "center", padding: "3rem", opacity: 0.5 }}>Nenhum item encontrado</div>}
             {filtered.map((p: Product) => (
-              <div key={p.id} className="list-item" style={{ borderColor: p.stock <= p.stockMin ? "rgba(184,125,42,0.35)" : undefined }}>
-                <div className="list-item-main">
-                  <div className="list-item-title">
-                    {p.name}
-
-                    {p.stock <= p.stockMin && <span className="badge badge-warn" style={{ marginLeft: "0.4rem", fontSize: "0.68rem" }}>⚠ Baixo</span>}
-                  </div>
+              <div key={p.id} className="list-item" style={{ borderLeft: p.stock <= p.stockMin ? "3px solid var(--warn)" : "none", background: p.stock <= p.stockMin ? "rgba(180,83,9,0.03)" : "transparent" }}>
+                <div>
+                  <div className="list-item-title" style={{ fontWeight: 700 }}>{p.name} <span style={{ opacity: 0.5, fontWeight: 400 }}>· {p.ml}ml</span></div>
                   <div className="list-item-sub">
-                    {p.category} · <strong>{p.ml}ml</strong> · Estoque: <strong>{p.stock}</strong> · Venda: {fmt(p.sellPrice)} · Margem: {margin(p)}%
+                    {p.category} · Estoque: <strong style={{ color: p.stock <= p.stockMin ? "var(--warn)" : "var(--gold)" }}>{p.stock} un.</strong> · Venda: {fmt(p.sellPrice)}
                   </div>
                 </div>
-                <div className="list-item-actions">
-                  <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(p)}>Editar</button>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id)}>✕</button>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button onClick={() => handleEdit(p)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--line)", color: "var(--muted)", padding: "4px 8px", fontSize: "0.75rem" }}>EDIT</button>
+                  <button onClick={() => handleDelete(p.id)} style={{ background: "rgba(155,28,28,0.1)", border: "1px solid var(--danger)", color: "var(--danger)", padding: "4px 8px", fontSize: "0.75rem" }}>✕</button>
                 </div>
               </div>
             ))}
