@@ -65,11 +65,10 @@ export function TabNoticias({ news }: { news: NewsArticle[] }) {
               rel="noreferrer" 
               className="card" 
               style={{ 
+                display: "block",
                 textDecoration: "none", 
                 padding: "1.5rem", 
                 overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
                 transition: "transform 0.2s, box-shadow 0.2s",
                 borderTop: "3px solid var(--gold)"
               }}
@@ -82,7 +81,7 @@ export function TabNoticias({ news }: { news: NewsArticle[] }) {
                 e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.4)";
               }}
             >
-              <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+              <div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", alignItems: "center" }}>
                   <span style={{ fontSize: "0.7rem", color: "var(--gold)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700 }}>
                     {item.source}
@@ -92,7 +91,7 @@ export function TabNoticias({ news }: { news: NewsArticle[] }) {
                 <h4 style={{ fontSize: "1.15rem", fontWeight: 600, color: "var(--text)", lineHeight: 1.4, marginBottom: "1.5rem" }}>
                   {item.title}
                 </h4>
-                <div style={{ marginTop: "auto", fontSize: "0.8rem", color: "var(--muted)", display: "flex", alignItems: "center", fontWeight: 500 }}>
+                <div style={{ marginTop: "1rem", fontSize: "0.8rem", color: "var(--muted)", display: "flex", alignItems: "center", fontWeight: 500 }}>
                   Ler matéria completa <span style={{ marginLeft: "0.25rem", color: "var(--gold)" }}>→</span>
                 </div>
               </div>
