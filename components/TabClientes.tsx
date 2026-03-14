@@ -143,7 +143,97 @@ export function TabClientes({ customers, setCustomers, sales, productById }: Pro
           </form>
         </div>
 
-        <div className="card">
+        {/* Novas Sessões: Top Clientes & Vencimentos */}
+        <div style={{ display: "grid", gap: "1.5rem" }}>
+          
+          <div className="card">
+            <h3 className="card-title">Top Clientes Frequentes</h3>
+            <p className="card-subtitle">Ranking por volume total de compras</p>
+            <div className="list" style={{ marginTop: "1rem" }}>
+              {useMemo(() => {
+                const totals: Record<string, number> = {};
+                sales.forEach(s => {
+                  totals[s.customerId] = (totals[s.customerId] || 0) + (s.unitSalePrice * s.quantity - s.discount);
+                });
+                const top = Object.entries(totals).sort((a,b) => b[1] - a[1]).slice(0, 4);
+                
+                if (top.length === 0) return <div className="empty-state"><p>Nenhuma venda registrada ainda.</p></div>;
+                
+                return top.map(([cId, total], i) => {
+                  const c = customers.find(x => x.id === cId);
+                  if (!c) return null;
+                  return (
+                    <div key={cId} className="list-item" style={{ cursor: "pointer" }} onClick={() => setSearch(c.name)}>
+                      <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                        <div style={{ fontSize: "1.25rem", fontWeight: 800, color: i < 3 ? "var(--gold)" : "var(--muted)", minWidth: "20px", textAlign: "center" }}>
+                          {i + 1}º
+                        </div>
+                        <div>
+                          <div className="list-item-title">{c.name}</div>
+                          <div className="list-item-sub">{c.contact || c.city || "Sem contato/cidade"}</div>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right", fontWeight: 700, color: "var(--emerald-light)" }}>
+                        {fmt(total)}
+                      </div>
+                    </div>
+                  );
+                });
+              }, [sales, customers, setSearch])}
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 className="card-title">Próximos Vencimentos</h3>
+            <p className="card-subtitle">Vendas a prazo em aberto</p>
+            <div className="list" style={{ marginTop: "1rem" }}>
+              {useMemo(() => {
+                const pendentes = sales
+                  .filter(s => s.paymentMethod === "a_prazo" && s.dueDates)
+                  .sort((a, b) => new Date(a.dueDates.split(',')[0]).getTime() - new Date(b.dueDates.split(',')[0]).getTime())
+                  .slice(0, 4);
+
+                if (pendentes.length === 0) return <div className="empty-state"><p>Nenhuma venda a prazo com vencimento pendente.</p></div>;
+
+                return pendentes.map(s => {
+                  const c = customers.find(x => x.id === s.customerId);
+                  const p = productById[s.productId];
+                  const total = (s.unitSalePrice * s.quantity) - s.discount;
+                  const firstDue = s.dueDates.split(',')[0];
+                  
+                  // Check if overdue
+                  const isOverdue = new Date(firstDue).getTime() < new Date().getTime();
+
+                  return (
+                    <div key={s.id} className="list-item" style={{ borderLeft: `3px solid ${isOverdue ? "var(--danger)" : "var(--warn)"}`, cursor: "pointer" }} onClick={() => setSearch(c?.name || "")}>
+                      <div>
+                        <div className="list-item-title" style={{ color: isOverdue ? "var(--danger)" : "var(--text)" }}>
+                          {c?.name || "Cliente excluído"}
+                        </div>
+                        <div className="list-item-sub" style={{ marginTop: "0.25rem" }}>
+                          {p?.name || "Produto"} · <strong style={{ color: "var(--text)" }}>{fmt(total)}</strong>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        {isOverdue ? (
+                          <div className="badge badge-danger">Vencido!</div>
+                        ) : (
+                          <div style={{ fontSize: "0.75rem" }}>
+                            <span style={{ color: "var(--warn)", fontWeight: 700 }}>Vence em:</span><br/>
+                            <span style={{ color: "var(--muted)" }}>{fmtDate(firstDue)}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                });
+              }, [sales, customers, productById, setSearch])}
+            </div>
+          </div>
+
+        </div>
+
+        <div className="card" style={{ gridColumn: "1 / -1" }}>
           <h3 className="card-title">Base de Clientes</h3>
           <p className="card-subtitle">Gerenciamento da carteira</p>
           <div style={{ margin: "1.25rem 0", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>

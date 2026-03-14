@@ -32,7 +32,7 @@ export type NewsArticle = {
   imageUrl: string | null; publishedAt: string | null;
 };
 
-export type Tab = "dashboard" | "estoque" | "clientes" | "vendas" | "financeiro" | "investimentos";
+export type Tab = "dashboard" | "estoque" | "clientes" | "vendas" | "financeiro" | "noticias";
 export type Feedback = { kind: "ok" | "error"; text: string } | null;
 
 export type Summary = { revenue: number; profit: number; count: number };

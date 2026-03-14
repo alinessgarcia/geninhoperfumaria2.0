@@ -12,7 +12,7 @@ import { TabEstoque } from "../components/TabEstoque";
 import { TabClientes } from "../components/TabClientes";
 import { TabVendas } from "../components/TabVendas";
 import { TabFinanceiro } from "../components/TabFinanceiro";
-import { TabInvestimentos } from "../components/TabInvestimentos";
+import { TabNoticias } from "../components/TabNoticias";
 
 // ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
 
@@ -166,7 +166,7 @@ export default function Page() {
     { id: "clientes" as Tab, icon: "◎", label: "Clientes", badge: inadimplentes.length || undefined },
     { id: "vendas" as Tab, icon: "◈", label: "Vendas" },
     { id: "financeiro" as Tab, icon: "◇", label: "Financeiro" },
-    { id: "investimentos" as Tab, icon: "◆", label: "Investimentos" },
+    { id: "noticias" as Tab, icon: "📰", label: "Notícias" },
   ];
 
   if (loading) return (
@@ -246,7 +246,7 @@ export default function Page() {
         {tab === "clientes" && <TabClientes customers={customers} setCustomers={setCustomers} sales={sales} productById={productById} />}
         {tab === "vendas" && <TabVendas sales={sales} setSales={setSales} products={products} setProducts={setProducts} customers={customers} productById={productById} customerById={customerById} />}
         {tab === "financeiro" && <TabFinanceiro sales={sales} products={products} customers={customers} productById={productById} customerById={customerById} summaryWeek={summaryWeek} summaryMonth={summaryMonth} summaryQuarter={summaryQuarter} summaryYear={summaryYear} />}
-        {tab === "investimentos" && <TabInvestimentos news={news} />}
+        {tab === "noticias" && <TabNoticias news={news} />}
       </main>
     </div>
   );

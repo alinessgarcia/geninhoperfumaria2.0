@@ -204,32 +204,103 @@ export function TabDashboard({ products, customers, sales, news, summaryWeek, su
         </div>
       </div>
 
-      {/* News Rail */}
-      {news.length > 0 && (
-        <div className="card" style={{ marginTop: "1rem" }}>
-          <h3 className="card-title" style={{ marginBottom: "1rem" }}>Insight do Setor</h3>
-          <div className="news-rail">
-            <div className="news-scroller" ref={newsScrollRef} onMouseEnter={() => setNewsPaused(true)} onMouseLeave={() => setNewsPaused(false)}>
-              <div className="news-track" style={{ display: "flex", gap: "1.5rem" }}>
-                {newsList.map((item: NewsArticle) => (
-                  <a key={item.id} href={item.url} target="_blank" rel="noreferrer" className="news-card" style={{ minWidth: "320px", background: "rgba(255,255,255,0.01)", border: "1px solid var(--line)", padding: "1.25rem" }}>
-                    <div className="news-card-top" style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", fontSize: "0.7rem", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                      <span>{item.source}</span>
-                      <span>{fmtDate(item.publishedAt)}</span>
-                    </div>
-                    {item.imageUrl && (
-                      <div style={{ height: "140px", overflow: "hidden", marginBottom: "1rem", border: "1px solid var(--line)" }}>
-                        <img src={item.imageUrl} alt="" className="news-thumb" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.8 }} />
+      {/* Novas Sessões: Top Produtos & Reposição */}
+      <div className="grid-2" style={{ marginTop: "1rem" }}>
+        
+        {/* Top Produtos */}
+        <div className="card">
+          <h3 className="card-title">Top 5 Produtos</h3>
+          <p className="card-subtitle">Mais vendidos no geral</p>
+          <div className="list" style={{ marginTop: "1rem" }}>
+            {useMemo(() => {
+              const counts: Record<string, { qty: number, rev: number }> = {};
+              sales.forEach(s => {
+                if (!counts[s.productId]) counts[s.productId] = { qty: 0, rev: 0 };
+                counts[s.productId].qty += s.quantity;
+                counts[s.productId].rev += (s.unitSalePrice * s.quantity) - s.discount;
+              });
+              const top = Object.entries(counts)
+                .sort((a,b) => b[1].qty - a[1].qty)
+                .slice(0, 5);
+                
+              if (top.length === 0) return <div className="empty-state"><p>Nenhuma venda registrada ainda.</p></div>;
+              
+              return top.map(([pId, data], i) => {
+                const p = productById[pId];
+                if (!p) return null;
+                return (
+                  <div key={pId} className="list-item" style={{ cursor: "pointer" }} onClick={() => setTab("estoque")}>
+                    <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                      <div style={{ fontSize: "1.25rem", fontWeight: 800, color: i < 3 ? "var(--gold)" : "var(--muted)", minWidth: "20px", textAlign: "center" }}>
+                        {i + 1}º
                       </div>
-                    )}
-                    <h4 style={{ fontSize: "1rem", fontWeight: 600, color: "var(--text)", lineHeight: 1.4 }}>{item.title}</h4>
-                  </a>
-                ))}
-              </div>
-            </div>
+                      <div>
+                        <div className="list-item-title">{p.name} <span style={{ opacity: 0.5, fontWeight: 400 }}>· {p.ml}ml</span></div>
+                        <div className="list-item-sub">{data.qty} un. vendidas</div>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontWeight: 700, color: "var(--emerald-light)" }}>{fmt(data.rev)}</div>
+                      <div style={{ fontSize: "0.7rem", color: "var(--muted)" }}>Estoque: {p.stock} un.</div>
+                    </div>
+                  </div>
+                );
+              });
+            }, [sales, productById, setTab])}
           </div>
         </div>
-      )}
+
+        {/* Sugestão de Reposição */}
+        <div className="card">
+          <h3 className="card-title">Sugestão de Reposição</h3>
+          <p className="card-subtitle">Produtos com estoque baixo ou zerado</p>
+          <div className="list" style={{ marginTop: "1rem" }}>
+            {lowStock.length === 0 ? (
+              <div className="empty-state">
+                <p>Estoque abastecido. Nenhuma reposição sugerida no momento.</p>
+              </div>
+            ) : (
+              lowStock.map(p => {
+                // Cálculo simples de urgência basé nas vendas recentes
+                const sales30d = sales.filter(s => {
+                  const d = new Date(s.soldAt);
+                  const days = (new Date().getTime() - d.getTime()) / (1000 * 3600 * 24);
+                  return s.productId === p.id && days <= 30;
+                }).reduce((a, b) => a + b.quantity, 0);
+                
+                const zeroEstimate = sales30d > 0 && p.stock > 0 
+                  ? Math.ceil(p.stock / (sales30d / 30)) 
+                  : p.stock === 0 ? "Zerado!" : "Baixa saída";
+
+                const isZero = p.stock === 0;
+
+                return (
+                  <div key={p.id} className="list-item" style={{ borderLeft: `3px solid ${isZero ? "var(--danger)" : "var(--warn)"}`, cursor: "pointer" }} onClick={() => setTab("estoque")}>
+                    <div>
+                      <div className="list-item-title" style={{ color: isZero ? "var(--danger)" : "var(--text)" }}>
+                        {p.name} <span style={{ opacity: 0.5, fontWeight: 400, color: "var(--muted)" }}>· {p.ml}ml</span>
+                      </div>
+                      <div className="list-item-sub" style={{ marginTop: "0.25rem" }}>
+                        Restam: <strong style={{ color: "var(--text)" }}>{p.stock} un.</strong> · Mínimo: {p.stockMin} un.
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      {isZero ? (
+                        <div className="badge badge-danger">Repor Urgente</div>
+                      ) : (
+                        <div style={{ fontSize: "0.75rem" }}>
+                          <span style={{ color: "var(--warn)", fontWeight: 700 }}>Esgota em:</span><br/>
+                          <span style={{ color: "var(--muted)" }}>{typeof zeroEstimate === "number" ? `~${zeroEstimate} dias` : zeroEstimate}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
