@@ -66,11 +66,12 @@ export function TabNoticias({ news }: { news: NewsArticle[] }) {
               className="card" 
               style={{ 
                 textDecoration: "none", 
-                padding: "0", 
+                padding: "1.5rem", 
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
-                transition: "transform 0.2s, box-shadow 0.2s"
+                transition: "transform 0.2s, box-shadow 0.2s",
+                borderTop: "3px solid var(--gold)"
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-4px)";
@@ -81,27 +82,18 @@ export function TabNoticias({ news }: { news: NewsArticle[] }) {
                 e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.4)";
               }}
             >
-              {item.imageUrl ? (
-                <div style={{ height: "180px", overflow: "hidden", borderBottom: "1px solid var(--line)", position: "relative" }}>
-                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "linear-gradient(to top, var(--bg-card), transparent)", zIndex: 1, opacity: 0.5 }}></div>
-                  <img src={item.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.7rem", color: "var(--gold)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700 }}>
+                    {item.source}
+                  </span>
+                  <span style={{ fontSize: "0.75rem", color: "var(--muted)", whiteSpace: "nowrap" }}>{fmtDate(item.publishedAt)}</span>
                 </div>
-              ) : (
-                <div style={{ height: "180px", background: "rgba(255,255,255,0.02)", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: "3rem", opacity: 0.1 }}>📰</span>
-                </div>
-              )}
-              
-              <div style={{ padding: "1.25rem", flex: 1, display: "flex", flexDirection: "column" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", fontSize: "0.65rem", color: "var(--gold)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700 }}>
-                  <span>{item.source}</span>
-                  <span style={{ color: "var(--muted)" }}>{fmtDate(item.publishedAt)}</span>
-                </div>
-                <h4 style={{ fontSize: "1.05rem", fontWeight: 600, color: "var(--text)", lineHeight: 1.4, marginBottom: "1rem" }}>
+                <h4 style={{ fontSize: "1.15rem", fontWeight: 600, color: "var(--text)", lineHeight: 1.4, marginBottom: "1.5rem" }}>
                   {item.title}
                 </h4>
-                <div style={{ marginTop: "auto", fontSize: "0.75rem", color: "var(--muted)", display: "flex", alignItems: "center" }}>
-                  Ler matéria completa <span style={{ marginLeft: "0.25rem" }}>→</span>
+                <div style={{ marginTop: "auto", fontSize: "0.8rem", color: "var(--muted)", display: "flex", alignItems: "center", fontWeight: 500 }}>
+                  Ler matéria completa <span style={{ marginLeft: "0.25rem", color: "var(--gold)" }}>→</span>
                 </div>
               </div>
             </a>
