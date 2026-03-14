@@ -40,10 +40,7 @@ export default function LoginPage() {
 
       <div className="login-card">
         <div className="login-logo-area">
-          <div className="login-logo">✦</div>
-          <h1 className="login-title">
-            Geninho <span>Perfumaria</span>
-          </h1>
+          <img src="/logo.png" alt="Geninho Perfumaria" style={{ width: "160px", height: "auto", margin: "0 auto 1.5rem", display: "block" }} />
           <p className="login-subtitle">Sistema de Gestão</p>
         </div>
 

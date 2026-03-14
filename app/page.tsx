@@ -197,8 +197,7 @@ export default function Page() {
           <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? "✕" : "☰"}
           </button>
-          <div className="header-logo">✦</div>
-          <h1>Geninho <span>Perfumaria</span></h1>
+          <img src="/logo.png" alt="Geninho Perfumaria" style={{ height: "40px", width: "auto", objectFit: "contain", marginLeft: "0.5rem" }} />
         </div>
         <div className="header-alerts">
           {lowStockProducts.length > 0 && (
